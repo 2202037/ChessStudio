@@ -81,12 +81,76 @@ namespace ChessStudio.Core
             if (piece == null || piece.Color != CurrentTurn)
                 return false;
 
+            // Special handling for castling
+            if (piece.Type == PieceType.King && !piece.HasMoved && Math.Abs(to.Col - from.Col) == 2)
+            {
+                return HandleCastling(from, to);
+            }
+
             if (!piece.IsValidMove(to, this))
                 return false;
 
             // Check if move puts own king in check
             if (WouldKingBeInCheck(from, to, CurrentTurn))
                 return false;
+
+            return ExecuteMove(from, to);
+        }
+
+        private bool HandleCastling(Position from, Position to)
+        {
+            // Check if king is in check
+            if (IsKingInCheck(CurrentTurn))
+                return false;
+
+            // Kingside castling
+            if (to.Col > from.Col)
+            {
+                Position rookPos = new Position(from.Row, 7);
+                Piece? rook = GetPiece(rookPos);
+                if (rook == null || rook.HasMoved || rook.Type != PieceType.Rook)
+                    return false;
+
+                // Check if path is clear
+                for (int col = from.Col + 1; col < rookPos.Col; col++)
+                {
+                    if (GetPiece(new Position(from.Row, col)) != null)
+                        return false;
+                }
+
+                // Check if king passes through check
+                Position intermediatePos = new Position(from.Row, from.Col + 1);
+                if (WouldKingBeInCheck(from, intermediatePos, CurrentTurn))
+                    return false;
+
+                // Check if destination is in check
+                if (WouldKingBeInCheck(from, to, CurrentTurn))
+                    return false;
+            }
+            // Queenside castling
+            else
+            {
+                Position rookPos = new Position(from.Row, 0);
+                Piece? rook = GetPiece(rookPos);
+                if (rook == null || rook.HasMoved || rook.Type != PieceType.Rook)
+                    return false;
+
+                // Check if path is clear
+                for (int col = rookPos.Col + 1; col < from.Col; col++)
+                {
+                    if (GetPiece(new Position(from.Row, col)) != null)
+                        return false;
+                }
+
+                // Check if king passes through check
+                Position intermediatePos = new Position(from.Row, from.Col - 1);
+                if (WouldKingBeInCheck(from, intermediatePos, CurrentTurn))
+                    return false;
+
+                // Check if destination is in check
+                if (WouldKingBeInCheck(from, to, CurrentTurn))
+                    return false;
+            }
 
             return ExecuteMove(from, to);
         }
