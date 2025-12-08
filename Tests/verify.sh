@@ -92,6 +92,7 @@ echo
 # Test 5: Test application startup
 echo "Test 5: Testing application startup..."
 cd ChessStudio.UI
+# Input '5' to select Exit option from main menu
 echo "5" | timeout 10 dotnet run > /tmp/test_output.txt 2>&1
 if grep -q "Welcome to Chess Studio" /tmp/test_output.txt && \
    grep -q "Database initialized" /tmp/test_output.txt; then

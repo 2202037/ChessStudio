@@ -318,7 +318,9 @@ namespace ChessStudio.UI
                 PlayerId = tp.PlayerId,
                 PlayerName = tp.Player.Name,
                 Score = tp.Score,
-                OpponentIds = new List<int>(), // In production, track opponent history
+                // TODO: Track opponent history from previous rounds to prevent duplicate pairings
+                // This would require querying Matches table for previous opponents
+                OpponentIds = new List<int>(),
                 HasBye = false
             }).ToList();
 

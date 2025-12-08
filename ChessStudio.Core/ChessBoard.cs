@@ -21,6 +21,8 @@ namespace ChessStudio.Core
         public int FullMoveNumber { get; private set; }
         public List<string> MoveHistory { get; private set; }
 
+        private const int FIFTY_MOVE_RULE_LIMIT = 100; // 100 half-moves = 50 full moves
+
         public ChessBoard()
         {
             board = new Piece?[8, 8];
@@ -320,7 +322,7 @@ namespace ChessStudio.Core
             }
 
             // Check for draw by 50-move rule
-            if (HalfMoveClock >= 100)
+            if (HalfMoveClock >= FIFTY_MOVE_RULE_LIMIT)
             {
                 State = GameState.Draw;
             }
