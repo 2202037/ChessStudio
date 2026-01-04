@@ -1,0 +1,73 @@
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td><strong>@order.OrderNumber</strong></td>
+                            <td>@order.User.FirstName @order.User.LastName</td>
+                            <td>
+                                @switch (order.Status)
+                                {
+                                    case OrderStatus.Pending:
+                                        <span class="badge bg-warning">Pending</span>
+                                        break;
+                                    case OrderStatus.Confirmed:
+                                        <span class="badge bg-info">Confirmed</span>
+                                        break;
+                                    case OrderStatus.Processing:
+                                        <span class="badge bg-primary">Processing</span>
+                                        break;
+                                    case OrderStatus.Shipped:
+                                        <span class="badge bg-info">Shipped</span>
+                                        break;
+                                    case OrderStatus.Delivered:
+                                        <span class="badge bg-success">Delivered</span>
+                                        break;
+                                    case OrderStatus.Cancelled:
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        break;
+                                    case OrderStatus.Refunded:
+                                        <span class="badge bg-secondary">Refunded</span>
+                                        break;
+                                }
+                            </td>
+                            <td>@order.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            <i class="bi bi-bag display-4"></i>
+                            <p class="mt-2">No orders yet</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
