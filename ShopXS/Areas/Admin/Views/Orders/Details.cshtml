@@ -1,0 +1,138 @@
+@model Order
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Order @Model.OrderNumber</h5>
+                @switch (Model.Status)
+                {
+                    case OrderStatus.Pending:
+                        <span class="badge bg-warning fs-6">Pending</span>
+                        break;
+                    case OrderStatus.Confirmed:
+                        <span class="badge bg-info fs-6">Confirmed</span>
+                        break;
+                    case OrderStatus.Processing:
+                        <span class="badge bg-primary fs-6">Processing</span>
+                        break;
+                    case OrderStatus.Shipped:
+                        <span class="badge bg-info fs-6">Shipped</span>
+                        break;
+                    case OrderStatus.Delivered:
+                        <span class="badge bg-success fs-6">Delivered</span>
+                        break;
+                    case OrderStatus.Cancelled:
+                        <span class="badge bg-danger fs-6">Cancelled</span>
+                        break;
+                    case OrderStatus.Refunded:
+                        <span class="badge bg-secondary fs-6">Refunded</span>
+                        break;
+                }
+            </div>
+            <div class="card-body">
+                <h6>Items</h6>
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <tr>
+                                <td>@item.Product.Title</td>
+                                <td>@item.Quantity</td>
+                                <td>$@item.UnitPrice.ToString("F2")</td>
+                                <td>$@item.TotalPrice.ToString("F2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Update Status -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="mb-0">Update Status</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="UpdateStatus" method="post" class="d-flex gap-2">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <select name="status" class="form-select" style="max-width: 200px;">
+                        @foreach (OrderStatus status in Enum.GetValues(typeof(OrderStatus)))
+                        {
+                            <option value="@status" selected="@(Model.Status == status)">@status</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h6 class="mb-0">Customer Info</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>@Model.User.FirstName @Model.User.LastName</strong></p>
+                <p class="text-muted mb-0">@Model.User.Email</p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h6 class="mb-0">Shipping</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-0">
+                    @Model.ShippingName<br>
+                    @Model.ShippingAddress<br>
+                    @Model.ShippingCity, @Model.ShippingCountry @Model.ShippingPostalCode<br>
+                    @Model.ShippingPhone
+                </p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="mb-0">Order Summary</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal</span>
+                    <span>$@Model.SubTotal.ToString("F2")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping</span>
+                    <span>$@Model.ShippingCost.ToString("F2")</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Tax</span>
+                    <span>$@Model.Tax.ToString("F2")</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <strong>Total</strong>
+                    <strong class="text-primary">$@Model.TotalAmount.ToString("F2")</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-outline-primary">
+        <i class="bi bi-arrow-left"></i> Back to Orders
+    </a>
+</div>
